@@ -1,0 +1,53 @@
+﻿@model BankAtmMVC.Models.BankUser
+
+@{
+    ViewData["Title"] = "Personal Transactions";
+}
+
+    <h1>@Model.FirstName @Model.LastName's Transactions</h1>
+    <h1>
+        <span class="">
+            <a asp-controller="Transaction" asp-action="Deposit"><input type="button" class="btn btn-primary" value="Deposit" />></a>
+        </span>
+    </h1>
+   
+
+<div>
+    <h4>Transaction</h4>
+    <hr />
+    
+    @foreach (var item in Model.Transactions) 
+    {
+<dl class="row">
+
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => item.Amount)
+    </dt>
+    @if (item.Type == TransactionType.Deposit)
+    {
+        <dd class="col-sm-10" style="color: green">
+            @Html.DisplayFor(model => item.Amount)
+        </dd>
+    }
+    else
+    {
+        <dd class="col-sm-10" style="color: red">
+            @Html.DisplayFor(model => item.Amount)
+        </dd>
+    }
+    <dt class="col-sm-2">
+        
+        @Html.DisplayNameFor(model => item.Date)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => item.Date)
+    </dd>
+</dl>
+    }
+
+
+
+</div>
+<div>
+    <a asp-controller="Home" asp-action="Index">Main Menu</a>
+</div>

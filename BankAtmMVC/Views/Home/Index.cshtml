@@ -1,0 +1,36 @@
+﻿@model BankAtmMVC.Models.BankUser
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+    <div class="text-center">
+        <p class="display-4">Welcome back @Model.FirstName @Model.LastName</p>
+       
+        @if (User.IsInRole("Admin"))
+        { }
+        else
+        {
+             <h1>Your Balance : @Model.Balance</h1>
+        <br />
+        <div>
+            <span class="">
+                <a asp-controller="Transaction" asp-action="Deposit"><input type="button" class="btn btn-primary" value="Deposit" />></a>
+            </span>
+        </div>
+        <br />
+        <br />
+        <div>
+            <span class="itemcenter">
+                <a asp-controller="Transaction" asp-action="Withdraw"><input type="button" class="btn btn-primary" value="Withdraw" />></a>
+            </span>
+        </div>  
+        <br />
+        <br />
+        <div>
+            <span class="itemright">
+                <a asp-controller="Transaction" asp-action="PersonalTransactions"><input type="button" class="btn btn-primary" value="Your Transactions" />></a>
+            </span>
+        </div>
+        }
+
+</div>
