@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
-
+using System.Data.SqlClient;
 
 namespace BankAtmMVC.Controllers
 {
@@ -45,18 +45,85 @@ namespace BankAtmMVC.Controllers
             transaction.BankUserID = currentId;
             transaction.Date = DateTime.UtcNow;
             transaction.Type = TransactionType.Deposit;
+           var total= transaction.Amount;
+           
             var bankUser = _context.AspNetUsers.Where(i => i.Id == currentId).First();
-
+            
             try
             {
-
-                if (ModelState.IsValid)
-                {
-                    bankUser.Balance += Input.Amount;
-                    _context.Transactions.Add(transaction);
+                //SqlConnection conn = new SqlConnection("Data Source=.\\SQLEXPRESS;Initial Catalog=Atm1;Integrated Security=true ;MultipleActiveResultSets=true");
+                //conn.Open();
+                //SqlCommand comm = new SqlCommand("select COUNT(Kart_1000) from[Atm1].[dbo].[Transactions] as test where Kart_1000 = 1000.00", conn);
+                //Int32 count = (Int32)comm.ExecuteScalar();
+                
+                var count1 = _context.Transactions.Count(p => p.Kart_500 == 500);
+                var count2 = _context.Transactions.Count(p => p.Kart_1000 == 1000);
+                var count3 = _context.Transactions.Count(p => p.Kart_2000 == 2000);
+                var count4 = _context.Transactions.Count(p => p.Kart_5000 == 5000);
+                int d1 = count1;
+                if (Input.Amount == 500) 
+                { 
+                    Input.Kart_500 = transaction.Kart_500 =total ;
+                    Input.Kart_1000 = 0;
+                    Input.Kart_2000 = 0;
+                    Input.Kart_5000 = 0;
                     await _context.SaveChangesAsync();
-                    return RedirectToAction("Index", "Home");
                 }
+                else if(Input.Amount == 1000) 
+                {
+                    Input.Kart_500 = 0;
+                    Input.Kart_1000 = transaction.Kart_1000=total;
+                    Input.Kart_2000 = 0;
+                    Input.Kart_5000 = 0;
+                    await _context.SaveChangesAsync();
+                }
+                else if (Input.Amount == 2000)
+                {
+                    Input.Kart_500 =0;
+                    Input.Kart_1000 = 0;
+                    Input.Kart_2000 = transaction.Kart_2000=total;
+                    Input.Kart_5000 = 0;
+                    await _context.SaveChangesAsync();
+                }
+                else if (Input.Amount == 5000)
+                {
+                    Input.Kart_500 = 0;
+                    Input.Kart_1000 = 0;
+                    Input.Kart_2000 = 0;
+                    Input.Kart_5000 = transaction.Kart_5000=total;
+                    await _context.SaveChangesAsync();
+                }
+
+                
+
+
+
+
+                
+                    //Input.Kart_500 = Input.Amount;
+                    //await _context.SaveChangesAsync();
+                    //_context.Transactions.Add(transaction);
+
+                    if (ModelState.IsValid)
+                    {
+                        bankUser.Balance += Input.Amount;
+                        _context.Transactions.Add(transaction);
+                        await _context.SaveChangesAsync();
+                        return RedirectToAction("Index", "Home");
+                    }
+                
+                else
+                {
+                    if (ModelState.IsValid)
+                    {
+                        bankUser.Balance += Input.Amount;
+                        _context.Transactions.Add(transaction);
+                        await _context.SaveChangesAsync();
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
+
+               
             }
             catch (DbUpdateException)
             {
@@ -94,8 +161,8 @@ namespace BankAtmMVC.Controllers
         public async Task<IActionResult> Withdraw([Bind("Amount")] Transaction transaction)
         {
             int n;
-            int a = 0;
-            int b = 0;
+            int min = 500;
+            int max = 50000;
             bool t = true;
             bool f = false;
             bool isMultiple;
@@ -127,25 +194,31 @@ namespace BankAtmMVC.Controllers
                         if (bankUser.Balance >= Input.Amount)
                         {
 
-                            if (Input.Amount >= 500)
+                            if (Input.Amount >= min )
                             {
-                                //if (Input.Amount==500 || Input.Amount == 1000 || Input.Amount == 2000|| Input.Amount == 5000) { }
-                                if (ModelState.IsValid && (bankUser.Balance - Input.Amount) >= 0)
+                                if (Input.Amount <= max)
                                 {
+                                    //if (Input.Amount==500 || Input.Amount == 1000 || Input.Amount == 2000|| Input.Amount == 5000) { }
+                                    if (ModelState.IsValid && (bankUser.Balance - Input.Amount) >= 0)
+                                    {
 
-                                    bankUser.Balance -= Input.Amount;
+                                        bankUser.Balance -= Input.Amount;
 
-                                    _context.Transactions.Add(transaction);
-                                    await _context.SaveChangesAsync();
-                                    ModelState.AddModelError("", "Sucsessfully transaction. ");
-                                    return RedirectToAction("Index", "Home");
+                                        _context.Transactions.Add(transaction);
+                                        await _context.SaveChangesAsync();
+                                        ModelState.AddModelError("", "Sucsessfully transaction. ");
+                                        return RedirectToAction("Index", "Home");
+
+
+                                    }
+                                    else
+                                    {
+
+                                        ModelState.AddModelError("", "You do not have enough funds " + "");
+                                    }
                                 }
-                                else
-                                {
-
-                                    ModelState.AddModelError("", "You do not have enough funds " +
-                            "");
-                                }
+                                else { ModelState.AddModelError("", "Unable to complete the transaction. " + "The minimum withdrawal is 50000"); }
+                                
                             }
                             else
                             {

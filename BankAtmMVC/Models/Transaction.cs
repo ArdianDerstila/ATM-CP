@@ -25,6 +25,13 @@ namespace BankAtmMVC.Models
 
 
         public string BankUserID { get; set; }
+
+        public float Mesatarja { get; set; }
+        public decimal Kart_5000 { get; set; }
+        public decimal Kart_2000 { get; set; }
+        public decimal Kart_1000 { get; set; }
+        public decimal Kart_500 { get; set; }
+
         public BankUser AspNetUsers { get; set; }
     }
 }

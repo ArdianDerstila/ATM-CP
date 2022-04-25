@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using static BankAtmMVC.Controllers.TransactionController;
 
 namespace BankAtmMVC.Controllers
-{
+{  
     [Authorize(Roles = "Admin")]
     public class AdministratorController : Controller
     {
